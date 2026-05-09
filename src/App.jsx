@@ -46,9 +46,12 @@ export default function App() {
       isTelegramReady={appData.isTelegramReady}
       isWalletConnected={appData.isWalletConnected}
       isWalletConnecting={appData.isWalletConnecting}
+      onCloseWalletModal={appData.closeWalletModal}
+      onConnectManualWallet={appData.connectManualWallet}
       onConnectWallet={appData.connectWallet}
       onTabChange={(tab) => navigate(TAB_ROUTES[tab])}
       onToggleTheme={toggleTheme}
+      showWalletModal={appData.showWalletModal}
       statusMessage={appData.statusMessage}
       user={appData.user}
       walletLabel={appData.walletLabel}
@@ -90,12 +93,20 @@ export default function App() {
               onClaimTask={appData.claimTask}
               specialQuest={appData.specialQuest}
               tasks={appData.tasks}
+              whitelistStatus={appData.whitelistStatus}
             />
           }
         />
         <Route
           path="/ranks"
-          element={<RanksPage isWalletConnected={appData.isWalletConnected} leaderboard={appData.leaderboard} user={appData.user} />}
+          element={
+            <RanksPage
+              isWalletConnected={appData.isWalletConnected}
+              leaderboard={appData.leaderboard}
+              user={appData.user}
+              whitelistStatus={appData.whitelistStatus}
+            />
+          }
         />
         <Route
           path="/profile"
@@ -103,9 +114,12 @@ export default function App() {
             <ProfilePage
               isWalletConnected={appData.isWalletConnected}
               nfts={appData.nfts}
+              onSetUsername={appData.setUsername}
               progress={appData.progress}
               tasks={appData.tasks}
               user={appData.user}
+              walletAddress={appData.walletAddress}
+              whitelistStatus={appData.whitelistStatus}
             />
           }
         />

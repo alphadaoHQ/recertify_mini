@@ -24,3 +24,14 @@
   --shadow-ambient: 0 20px 60px rgba(129, 39, 207, 0.12);
   --shadow-float: 0 16px 40px rgba(129, 39, 207, 0.14);
 }
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

@@ -1,4 +1,6 @@
-export function RanksPage({ isWalletConnected, leaderboard, user }) {
+import { Icon } from "../components/Icon";
+
+export function RanksPage({ isWalletConnected, leaderboard, user, whitelistStatus }) {
   const champions = leaderboard.slice(0, 3);
   const rest = leaderboard.slice(3);
 
@@ -19,6 +21,16 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
         <p className="mt-3 max-w-[29ch] text-sm leading-6 text-white/90">
           Leaderboard placement updates from wallet-linked profile XP earned through modules and tasks.
         </p>
+        {isWalletConnected && whitelistStatus ? (
+          <div className={`mt-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+            whitelistStatus.eligible
+              ? "bg-emerald-400/25 text-emerald-100"
+              : "bg-white/12 text-white/80"
+          }`}>
+            <Icon className="size-3.5" name={whitelistStatus.eligible ? "check" : "lock"} />
+            {whitelistStatus.eligible ? "Whitelist Eligible" : "Whitelist: Not Yet Eligible"}
+          </div>
+        ) : null}
       </section>
 
       <section className="grid gap-4">
@@ -38,13 +50,22 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
               } ${index === 0 ? "min-h-48" : "min-h-40"}`}
               key={entry.id}
             >
-              <img
-                alt={entry.name}
-                className={`mx-auto h-16 w-16 rounded-[1.25rem] object-cover ring-4 ${
-                  index === 0 ? "ring-white/25" : "ring-white/60 dark:ring-white/10"
-                }`}
-                src={entry.avatar}
-              />
+              <div className="relative mx-auto w-fit">
+                <img
+                  alt={entry.name}
+                  className={`mx-auto h-16 w-16 rounded-[1.25rem] object-cover ring-4 ${
+                    index === 0 ? "ring-white/25" : "ring-white/60 dark:ring-white/10"
+                  }`}
+                  src={entry.avatar}
+                />
+                {entry.whitelistEligible ? (
+                  <div className={`absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full ${
+                    index === 0 ? "bg-emerald-400 text-white" : "bg-emerald-500 text-white"
+                  }`}>
+                    <Icon className="size-3" name="check" />
+                  </div>
+                ) : null}
+              </div>
               <div
                 className={`mx-auto mt-4 inline-flex min-w-9 items-center justify-center rounded-full px-3 py-2 text-xs font-black ${
                   index === 0 ? "bg-white/20 text-white" : accentClass[entry.accent]
@@ -52,7 +73,9 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
               >
                 {entry.badge}
               </div>
-              <h3 className="mt-3 font-display text-sm font-extrabold">{entry.name}</h3>
+              <h3 className="mt-3 font-display text-sm font-extrabold">
+                {entry.username ? `@${entry.username}` : entry.name}
+              </h3>
               <p className={`mt-1 text-xs ${index === 0 ? "text-white/85" : "text-brand-muted dark:text-slate-300"}`}>
                 {entry.xp.toLocaleString()} XP
               </p>
@@ -78,9 +101,18 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
                 <div className="rounded-full bg-brand-primary-soft/75 px-3 py-2 text-sm font-black text-brand-primary dark:bg-white/10 dark:text-brand-primary-soft">
                   {entry.rank}
                 </div>
-                <img alt={entry.name} className="size-12 rounded-2xl object-cover" src={entry.avatar} />
+                <div className="relative">
+                  <img alt={entry.name} className="size-12 rounded-2xl object-cover" src={entry.avatar} />
+                  {entry.whitelistEligible ? (
+                    <div className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-white">
+                      <Icon className="size-2.5" name="check" />
+                    </div>
+                  ) : null}
+                </div>
                 <div>
-                  <h3 className="font-display text-sm font-extrabold text-brand-text dark:text-white">{entry.name}</h3>
+                  <h3 className="font-display text-sm font-extrabold text-brand-text dark:text-white">
+                    {entry.username ? `@${entry.username}` : entry.name}
+                  </h3>
                   <p className="mt-1 text-xs text-brand-muted dark:text-slate-300">Lvl {entry.level} learner</p>
                 </div>
               </div>
@@ -99,7 +131,9 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
                 </div>
                 <img alt={user.name} className="size-12 rounded-2xl object-cover" src={user.avatar} />
                 <div>
-                  <h3 className="font-display text-sm font-extrabold text-brand-text dark:text-white">You</h3>
+                  <h3 className="font-display text-sm font-extrabold text-brand-text dark:text-white">
+                    {user.username ? `@${user.username}` : "You"}
+                  </h3>
                   <p className="mt-1 text-xs text-brand-primary/70 dark:text-brand-primary-soft/80">
                     Wallet-linked leaderboard profile
                   </p>
@@ -112,6 +146,75 @@ export function RanksPage({ isWalletConnected, leaderboard, user }) {
           ) : null}
         </div>
       </section>
+
+      {/* Whitelist Progress Section */}
+      {isWalletConnected && whitelistStatus ? (
+        <section className={`rounded-[2rem] p-6 shadow-float ${
+          whitelistStatus.eligible
+            ? "bg-gradient-to-br from-emerald-50 to-emerald-100/70 dark:from-emerald-500/10 dark:to-emerald-500/5 border border-emerald-200 dark:border-emerald-500/20"
+            : "bg-white/75 dark:bg-white/5 border border-brand-outline/10 dark:border-white/10"
+        }`}>
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <h2 className="font-display text-lg font-extrabold tracking-[-0.03em] text-brand-text dark:text-white">
+              Whitelist Progress
+            </h2>
+            <span className={`rounded-full px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.14em] ${
+              whitelistStatus.eligible
+                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                : "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+            }`}>
+              {whitelistStatus.eligible ? "Eligible ✓" : "In Progress"}
+            </span>
+          </div>
+          <div className="grid gap-3">
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-medium text-brand-muted dark:text-slate-300">Tasks Completed</span>
+                <span className="font-bold text-brand-text dark:text-white">
+                  {whitelistStatus.tasksCompleted}/{whitelistStatus.tasksRequired}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-brand-outline/15 dark:bg-white/10">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    whitelistStatus.tasksCompleted >= whitelistStatus.tasksRequired
+                      ? "bg-emerald-500"
+                      : "bg-gradient-to-r from-brand-primary to-brand-primary-bright"
+                  }`}
+                  style={{ width: `${Math.min((whitelistStatus.tasksCompleted / whitelistStatus.tasksRequired) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-medium text-brand-muted dark:text-slate-300">Modules Completed</span>
+                <span className="font-bold text-brand-text dark:text-white">
+                  {whitelistStatus.modulesCompleted}/{whitelistStatus.modulesRequired}
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-brand-outline/15 dark:bg-white/10">
+                <div
+                  className={`h-full rounded-full transition-all ${
+                    whitelistStatus.modulesCompleted >= whitelistStatus.modulesRequired
+                      ? "bg-emerald-500"
+                      : "bg-gradient-to-r from-brand-primary to-brand-primary-bright"
+                  }`}
+                  style={{ width: `${Math.min((whitelistStatus.modulesCompleted / whitelistStatus.modulesRequired) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          </div>
+          {whitelistStatus.eligible ? (
+            <p className="mt-4 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+              🎉 You are eligible for the whitelist mint!
+            </p>
+          ) : (
+            <p className="mt-4 text-xs text-brand-muted dark:text-slate-300">
+              Complete the requirements above to become eligible for the whitelist NFT mint.
+            </p>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

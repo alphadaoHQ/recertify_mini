@@ -1,6 +1,6 @@
 import { Icon } from "../components/Icon";
 
-export function TasksPage({ isWalletConnected, onClaimSpecialQuest, onClaimTask, specialQuest, tasks }) {
+export function TasksPage({ isWalletConnected, onClaimSpecialQuest, onClaimTask, specialQuest, tasks, whitelistStatus }) {
   const claimedTaskCount = tasks.filter((task) => task.claimed).length;
 
   return (
@@ -13,8 +13,19 @@ export function TasksPage({ isWalletConnected, onClaimSpecialQuest, onClaimTask,
         <p className="mt-3 max-w-[28ch] text-sm leading-6 text-white/90">
           Complete daily actions, claim your wallet-linked rewards, and unlock the ambassador bonus quest.
         </p>
-        <div className="mt-5 rounded-full bg-white/12 px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] w-fit">
-          {claimedTaskCount}/{tasks.length} tasks claimed
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <div className="rounded-full bg-white/12 px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em]">
+            {claimedTaskCount}/{tasks.length} tasks claimed
+          </div>
+          {isWalletConnected && whitelistStatus ? (
+            <div className={`rounded-full px-3 py-2 text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+              whitelistStatus.eligible
+                ? "bg-emerald-400/25 text-emerald-100"
+                : "bg-white/12 text-white/80"
+            }`}>
+              {whitelistStatus.eligible ? "✓ Whitelist Eligible" : `Whitelist: ${whitelistStatus.tasksCompleted}/${whitelistStatus.tasksRequired} tasks`}
+            </div>
+          ) : null}
         </div>
       </section>
 

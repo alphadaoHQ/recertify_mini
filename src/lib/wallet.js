@@ -8,6 +8,14 @@ export function getWalletProvider() {
   return window.ethereum ?? null;
 }
 
+export function hasWalletProvider() {
+  return getWalletProvider() !== null;
+}
+
+export function isValidEvmAddress(address) {
+  return /^0x[0-9a-fA-F]{40}$/.test(address);
+}
+
 export async function getConnectedWalletAddress() {
   const provider = getWalletProvider();
   if (!provider) {
@@ -27,7 +35,8 @@ export async function getConnectedWalletAddress() {
 export async function connectWalletAddress() {
   const provider = getWalletProvider();
   if (!provider) {
-    throw new Error("No EVM wallet was found. Please install or open a compatible wallet.");
+    // Signal that no provider is available — caller should show manual input
+    return null;
   }
 
   const accounts = await provider.request({ method: "eth_requestAccounts" });
@@ -39,6 +48,16 @@ export async function connectWalletAddress() {
 
   localStorage.setItem(WALLET_STORAGE_KEY, walletAddress);
   return walletAddress;
+}
+
+export function connectManualWallet(address) {
+  const trimmed = address?.trim().toLowerCase();
+  if (!trimmed || !isValidEvmAddress(trimmed)) {
+    throw new Error("Please enter a valid EVM wallet address (0x followed by 40 hex characters).");
+  }
+
+  localStorage.setItem(WALLET_STORAGE_KEY, trimmed);
+  return trimmed;
 }
 
 export function formatWalletAddress(walletAddress) {

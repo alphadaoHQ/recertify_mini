@@ -19,6 +19,7 @@ import {
   Trophy,
   UserCircle2,
   Wallet,
+  X,
 } from "lucide-react";
 
 const icons = {
@@ -42,6 +43,8 @@ const icons = {
   star: Star,
   sun: SunMedium,
   trophy: Trophy,
+  wallet: Wallet,
+  x: X,
 };
 
 export function Icon({ className = "size-5", name, strokeWidth = 2 }) {

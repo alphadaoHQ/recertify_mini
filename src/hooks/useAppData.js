@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { createAppViewModel, loadLeaderboard, loadWalletState, saveWalletState } from "../lib/appData";
-import { getConnectedWalletAddress, connectWalletAddress, formatWalletAddress } from "../lib/wallet";
+import { createAppViewModel, loadLeaderboard, loadWalletState, loadWhitelistStatus, saveUsername, saveWalletState } from "../lib/appData";
+import { getConnectedWalletAddress, connectWalletAddress, connectManualWallet, hasWalletProvider, formatWalletAddress } from "../lib/wallet";
 import { getTelegramContext, initializeTelegramApp } from "../lib/telegram";
 import { seedData } from "../data/mockData";
 
@@ -29,8 +29,10 @@ export function useAppData() {
     currentUserRank: null,
     leaderboard: seedData.defaultLeaderboard,
   });
+  const [whitelistStatus, setWhitelistStatus] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   useEffect(() => {
     const telegramReady = initializeTelegramApp();
@@ -44,8 +46,10 @@ export function useAppData() {
     try {
       const nextWalletState = await loadWalletState(address, getWalletDisplayName(telegram, address));
       const nextLeaderboardState = await loadLeaderboard(nextWalletState);
+      const nextWhitelistStatus = await loadWhitelistStatus(address, nextWalletState);
       setWalletState(nextWalletState);
       setLeaderboardState(nextLeaderboardState);
+      setWhitelistStatus(nextWhitelistStatus);
     } catch (error) {
       setErrorMessage(error.message || "Unable to load your app data.");
     } finally {
@@ -88,8 +92,10 @@ export function useAppData() {
       const nextWalletState = updater(walletState);
       await saveWalletState(nextWalletState);
       const nextLeaderboardState = await loadLeaderboard(nextWalletState);
+      const nextWhitelistStatus = await loadWhitelistStatus(walletAddress, nextWalletState);
       setWalletState(nextWalletState);
       setLeaderboardState(nextLeaderboardState);
+      setWhitelistStatus(nextWhitelistStatus);
       setStatusMessage(successMessage);
       setErrorMessage("");
       return true;
@@ -105,11 +111,37 @@ export function useAppData() {
 
     try {
       const address = await connectWalletAddress();
+
+      if (address === null) {
+        // No browser wallet provider — show manual input modal
+        setShowWalletModal(true);
+        setIsWalletConnecting(false);
+        return;
+      }
+
       setWalletAddress(address);
       await refreshState(address);
       setStatusMessage(`Wallet connected: ${formatWalletAddress(address)}`);
     } catch (error) {
       setErrorMessage(error.message || "Wallet connection failed.");
+    } finally {
+      setIsWalletConnecting(false);
+    }
+  };
+
+  const connectManualWalletHandler = async (manualAddress) => {
+    setIsWalletConnecting(true);
+    setErrorMessage("");
+
+    try {
+      const address = connectManualWallet(manualAddress);
+      setWalletAddress(address);
+      await refreshState(address);
+      setShowWalletModal(false);
+      setStatusMessage(`Wallet connected: ${formatWalletAddress(address)}`);
+    } catch (error) {
+      setIsWalletConnecting(false);
+      throw error;
     } finally {
       setIsWalletConnecting(false);
     }
@@ -276,25 +308,53 @@ export function useAppData() {
     );
   };
 
+  const setUserUsername = async (username) => {
+    if (!walletAddress) {
+      setErrorMessage("Connect your wallet to set a username.");
+      return false;
+    }
+
+    try {
+      const savedUsername = await saveUsername(walletAddress, username);
+      setWalletState((current) => ({
+        ...current,
+        profile: {
+          ...current.profile,
+          username: savedUsername,
+        },
+      }));
+      setStatusMessage(`Username set to @${savedUsername}`);
+      setErrorMessage("");
+      return true;
+    } catch (error) {
+      setErrorMessage(error.message || "Failed to set username.");
+      return false;
+    }
+  };
+
   const appViewModel = useMemo(
-    () => createAppViewModel(walletState, leaderboardState),
-    [walletState, leaderboardState],
+    () => createAppViewModel(walletState, leaderboardState, whitelistStatus),
+    [walletState, leaderboardState, whitelistStatus],
   );
 
   return {
     ...appViewModel,
     appName: seedData.appName,
     connectWallet,
+    connectManualWallet: connectManualWalletHandler,
     completeModule,
     errorMessage,
     isLoading,
     isTelegramReady,
     isWalletConnected: Boolean(walletAddress),
     isWalletConnecting,
+    showWalletModal,
+    closeWalletModal: () => setShowWalletModal(false),
     statusMessage,
     walletAddress,
     walletLabel: formatWalletAddress(walletAddress),
     claimSpecialQuest,
     claimTask,
+    setUsername: setUserUsername,
   };
 }

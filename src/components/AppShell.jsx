@@ -1,5 +1,6 @@
 import { BottomNav } from "./BottomNav";
 import { TopBar } from "./TopBar";
+import { WalletModal } from "./WalletModal";
 
 function MessageBanner({ tone = "success", message }) {
   if (!message) {
@@ -27,9 +28,12 @@ export function AppShell({
   isTelegramReady,
   isWalletConnected,
   isWalletConnecting,
+  onCloseWalletModal,
+  onConnectManualWallet,
   onConnectWallet,
   onTabChange,
   onToggleTheme,
+  showWalletModal,
   statusMessage,
   user,
   walletLabel,
@@ -60,6 +64,13 @@ export function AppShell({
         </main>
         <BottomNav activeTab={activeTab} onTabChange={onTabChange} />
       </div>
+
+      <WalletModal
+        isOpen={showWalletModal}
+        onClose={onCloseWalletModal}
+        onConnect={onConnectManualWallet}
+      />
     </div>
   );
 }
+

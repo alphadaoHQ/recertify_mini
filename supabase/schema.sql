@@ -1,6 +1,7 @@
 create table if not exists profiles (
   wallet_address text primary key,
   name text not null,
+  username text unique,
   avatar text,
   xp integer not null default 0,
   weekly_xp integer not null default 0,
@@ -9,6 +10,7 @@ create table if not exists profiles (
   title text not null default 'New Explorer',
   next_rank text not null default 'Builder',
   xp_to_next_rank integer not null default 500,
+  whitelist_eligible boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -49,4 +51,15 @@ create table if not exists reward_claims (
   claimed_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   primary key (wallet_address, reward_id)
+);
+
+create table if not exists whitelist (
+  wallet_address text primary key references profiles(wallet_address) on delete cascade,
+  username text,
+  rank integer not null,
+  total_xp integer not null default 0,
+  tasks_completed integer not null default 0,
+  modules_completed integer not null default 0,
+  eligible_at timestamptz not null default now(),
+  status text not null default 'eligible'
 );
