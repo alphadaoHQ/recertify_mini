@@ -9,6 +9,7 @@ export function ProfilePage({ isWalletConnected, nfts, onSetUsername, progress, 
   const [usernameInput, setUsernameInput] = useState("");
   const [isSettingUsername, setIsSettingUsername] = useState(false);
   const [usernameError, setUsernameError] = useState("");
+  const [usernameSuccessModal, setUsernameSuccessModal] = useState(null);
 
   const hasUsername = Boolean(user.username);
 
@@ -20,13 +21,14 @@ export function ProfilePage({ isWalletConnected, nfts, onSetUsername, progress, 
 
     setIsSettingUsername(true);
     setUsernameError("");
-    const success = await onSetUsername(usernameInput.trim());
+    const result = await onSetUsername(usernameInput.trim());
     setIsSettingUsername(false);
 
-    if (!success) {
+    if (!result.success) {
       setUsernameError("Username may already be taken. Try a different one.");
     } else {
       setUsernameInput("");
+      setUsernameSuccessModal(result.username);
     }
   };
 
@@ -291,6 +293,37 @@ export function ProfilePage({ isWalletConnected, nfts, onSetUsername, progress, 
           ))}
         </div>
       </section>
+
+      {/* Username Success Modal */}
+      {usernameSuccessModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setUsernameSuccessModal(null)}
+          />
+          <div className="relative mx-4 w-full max-w-[360px] overflow-hidden rounded-[2rem] bg-white p-8 text-center shadow-2xl dark:bg-slate-900 animate-[slideUp_0.3s_ease-out]">
+            <div className="mx-auto mb-4 inline-flex size-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/15">
+              <Icon className="size-8 text-emerald-600 dark:text-emerald-300" name="check" />
+            </div>
+            <h3 className="font-display text-xl font-extrabold text-brand-text dark:text-white">
+              Username Set!
+            </h3>
+            <p className="mt-3 text-sm text-brand-muted dark:text-slate-300">
+              Your username has been set to
+            </p>
+            <p className="mt-2 inline-block rounded-full bg-brand-primary-soft/60 px-4 py-2 font-display text-lg font-extrabold text-brand-primary dark:bg-white/10 dark:text-brand-primary-soft">
+              @{usernameSuccessModal}
+            </p>
+            <button
+              className="mt-6 w-full rounded-2xl bg-gradient-to-r from-brand-primary to-brand-primary-bright px-6 py-3.5 text-sm font-extrabold uppercase tracking-[0.1em] text-white shadow-lg shadow-brand-primary/25 transition hover:shadow-xl hover:shadow-brand-primary/35"
+              onClick={() => setUsernameSuccessModal(null)}
+              type="button"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

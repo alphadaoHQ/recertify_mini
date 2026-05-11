@@ -7,6 +7,7 @@ export function TopBar({
   isWalletConnected,
   isWalletConnecting,
   onConnectWallet,
+  onDisconnectWallet,
   onToggleTheme,
   user,
   walletLabel,
@@ -26,18 +27,40 @@ export function TopBar({
               <Icon className="size-3.5" name="check" />
               {isTelegramReady ? "Telegram Ready" : "Browser Preview"}
             </p>
-            <button
-              className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] ${
-                isWalletConnected
-                  ? "bg-emerald-100 text-brand-secondary dark:bg-emerald-500/15 dark:text-emerald-300"
-                  : "bg-brand-primary-soft/70 text-brand-primary dark:bg-white/10 dark:text-brand-primary-soft"
-              }`}
-              disabled={isWalletConnecting}
-              onClick={onConnectWallet}
-              type="button"
-            >
-              {isWalletConnecting ? "Connecting..." : walletLabel}
-            </button>
+
+            {/* Username display */}
+            {user.username ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-primary-soft/60 px-2.5 py-0.5 text-[10px] font-extrabold text-brand-primary dark:bg-white/10 dark:text-brand-primary-soft">
+                @{user.username}
+              </span>
+            ) : null}
+          </div>
+
+          {/* Wallet connect / disconnect */}
+          <div className="mt-1.5 flex items-center gap-2">
+            {isWalletConnected ? (
+              <>
+                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-brand-secondary dark:bg-emerald-500/15 dark:text-emerald-300">
+                  {walletLabel}
+                </span>
+                <button
+                  className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-rose-600 transition hover:bg-rose-200 dark:bg-rose-500/15 dark:text-rose-300 dark:hover:bg-rose-500/25"
+                  onClick={onDisconnectWallet}
+                  type="button"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button
+                className="rounded-full bg-brand-primary-soft/70 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-brand-primary transition hover:bg-brand-primary-soft dark:bg-white/10 dark:text-brand-primary-soft dark:hover:bg-white/15"
+                disabled={isWalletConnecting}
+                onClick={onConnectWallet}
+                type="button"
+              >
+                {isWalletConnecting ? "Connecting..." : "Connect Wallet"}
+              </button>
+            )}
           </div>
         </div>
       </div>

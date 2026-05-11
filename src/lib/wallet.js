@@ -67,3 +67,8 @@ export function formatWalletAddress(walletAddress) {
 
   return `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
 }
+
+export function disconnectWallet() {
+  localStorage.removeItem(WALLET_STORAGE_KEY);
+}
+

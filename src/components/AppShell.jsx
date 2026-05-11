@@ -31,6 +31,7 @@ export function AppShell({
   onCloseWalletModal,
   onConnectManualWallet,
   onConnectWallet,
+  onDisconnectWallet,
   onTabChange,
   onToggleTheme,
   showWalletModal,
@@ -53,6 +54,7 @@ export function AppShell({
           isWalletConnected={isWalletConnected}
           isWalletConnecting={isWalletConnecting}
           onConnectWallet={onConnectWallet}
+          onDisconnectWallet={onDisconnectWallet}
           onToggleTheme={onToggleTheme}
           user={user}
           walletLabel={walletLabel}

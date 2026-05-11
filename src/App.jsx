@@ -49,6 +49,7 @@ export default function App() {
       onCloseWalletModal={appData.closeWalletModal}
       onConnectManualWallet={appData.connectManualWallet}
       onConnectWallet={appData.connectWallet}
+      onDisconnectWallet={appData.disconnectWallet}
       onTabChange={(tab) => navigate(TAB_ROUTES[tab])}
       onToggleTheme={toggleTheme}
       showWalletModal={appData.showWalletModal}

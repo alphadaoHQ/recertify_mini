@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createAppViewModel, loadLeaderboard, loadWalletState, loadWhitelistStatus, saveUsername, saveWalletState } from "../lib/appData";
-import { getConnectedWalletAddress, connectWalletAddress, connectManualWallet, hasWalletProvider, formatWalletAddress } from "../lib/wallet";
+import { getConnectedWalletAddress, connectWalletAddress, connectManualWallet, disconnectWallet, hasWalletProvider, formatWalletAddress } from "../lib/wallet";
 import { getTelegramContext, initializeTelegramApp } from "../lib/telegram";
 import { seedData } from "../data/mockData";
 
@@ -127,6 +127,13 @@ export function useAppData() {
     } finally {
       setIsWalletConnecting(false);
     }
+  };
+
+  const disconnectWalletHandler = async () => {
+    disconnectWallet();
+    setWalletAddress(null);
+    setStatusMessage("Wallet disconnected.");
+    await refreshState(null);
   };
 
   const connectManualWalletHandler = async (manualAddress) => {
@@ -311,7 +318,7 @@ export function useAppData() {
   const setUserUsername = async (username) => {
     if (!walletAddress) {
       setErrorMessage("Connect your wallet to set a username.");
-      return false;
+      return { success: false };
     }
 
     try {
@@ -323,12 +330,11 @@ export function useAppData() {
           username: savedUsername,
         },
       }));
-      setStatusMessage(`Username set to @${savedUsername}`);
       setErrorMessage("");
-      return true;
+      return { success: true, username: savedUsername };
     } catch (error) {
       setErrorMessage(error.message || "Failed to set username.");
-      return false;
+      return { success: false };
     }
   };
 
@@ -342,6 +348,7 @@ export function useAppData() {
     appName: seedData.appName,
     connectWallet,
     connectManualWallet: connectManualWalletHandler,
+    disconnectWallet: disconnectWalletHandler,
     completeModule,
     errorMessage,
     isLoading,
