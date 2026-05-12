@@ -46,13 +46,10 @@ export default function App() {
       isTelegramReady={appData.isTelegramReady}
       isWalletConnected={appData.isWalletConnected}
       isWalletConnecting={appData.isWalletConnecting}
-      onCloseWalletModal={appData.closeWalletModal}
-      onConnectManualWallet={appData.connectManualWallet}
       onConnectWallet={appData.connectWallet}
       onDisconnectWallet={appData.disconnectWallet}
       onTabChange={(tab) => navigate(TAB_ROUTES[tab])}
       onToggleTheme={toggleTheme}
-      showWalletModal={appData.showWalletModal}
       statusMessage={appData.statusMessage}
       user={appData.user}
       walletLabel={appData.walletLabel}

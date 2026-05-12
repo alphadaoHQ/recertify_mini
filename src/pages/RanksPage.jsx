@@ -205,9 +205,20 @@ export function RanksPage({ isWalletConnected, leaderboard, user, whitelistStatu
             </div>
           </div>
           {whitelistStatus.eligible ? (
-            <p className="mt-4 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-              🎉 You are eligible for the whitelist mint!
-            </p>
+            <div className="mt-4">
+              <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-3">
+                🎉 You are eligible for the whitelist mint!
+              </p>
+              <a
+                href="https://alphadao-nft.vercel.app/"
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 px-6 py-3.5 text-sm font-extrabold uppercase tracking-[0.1em] text-white shadow-lg shadow-emerald-500/25 transition hover:shadow-xl hover:shadow-emerald-500/35"
+              >
+                <Icon className="size-4" name="sparkles" />
+                Mint Your NFT
+              </a>
+            </div>
           ) : (
             <p className="mt-4 text-xs text-brand-muted dark:text-slate-300">
               Complete the requirements above to become eligible for the whitelist NFT mint.

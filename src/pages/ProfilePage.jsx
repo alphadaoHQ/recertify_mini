@@ -169,8 +169,21 @@ export function ProfilePage({ isWalletConnected, nfts, onSetUsername, progress, 
               </div>
             </div>
             {whitelistStatus.eligible && whitelistStatus.rank ? (
-              <div className="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-500/15 text-xs text-emerald-700 dark:text-emerald-300 font-bold">
+              <div className="mt-3 pt-3 border-t border-emerald-200/50 dark:border-emerald-500/15 text-xs text-emerald-700 dark:text-emerald-300 font-bold mb-3">
                 Whitelist Rank: #{whitelistStatus.rank}
+              </div>
+            ) : null}
+            {whitelistStatus.eligible ? (
+              <div className="mt-2">
+                <a
+                  href="https://alphadao-nft.vercel.app/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-400 px-6 py-3 text-xs font-extrabold uppercase tracking-[0.1em] text-white shadow-lg shadow-emerald-500/25 transition hover:shadow-xl hover:shadow-emerald-500/35"
+                >
+                  <Icon className="size-3.5" name="sparkles" />
+                  Mint Your NFT
+                </a>
               </div>
             ) : null}
           </div>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTonAddress, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { createAppViewModel, loadLeaderboard, loadWalletState, loadWhitelistStatus, saveUsername, saveWalletState } from "../lib/appData";
-import { getConnectedWalletAddress, connectWalletAddress, connectManualWallet, disconnectWallet, hasWalletProvider, formatWalletAddress } from "../lib/wallet";
+import { formatWalletAddress } from "../lib/wallet";
 import { getTelegramContext, initializeTelegramApp } from "../lib/telegram";
 import { seedData } from "../data/mockData";
 
@@ -14,7 +15,13 @@ function getWalletDisplayName(telegram, walletAddress) {
 
 export function useAppData() {
   const telegram = getTelegramContext();
-  const [walletAddress, setWalletAddress] = useState(null);
+  const tonAddress = useTonAddress();
+  const tonWallet = useTonWallet();
+  const [tonConnectUI] = useTonConnectUI();
+
+  const walletAddress = tonAddress || null;
+  const isWalletConnected = Boolean(tonWallet);
+
   const [isTelegramReady, setIsTelegramReady] = useState(false);
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +39,6 @@ export function useAppData() {
   const [whitelistStatus, setWhitelistStatus] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [showWalletModal, setShowWalletModal] = useState(false);
 
   useEffect(() => {
     const telegramReady = initializeTelegramApp();
@@ -57,30 +63,10 @@ export function useAppData() {
     }
   };
 
+  // Refresh state whenever the TON wallet address changes
   useEffect(() => {
-    getConnectedWalletAddress()
-      .then((address) => {
-        setWalletAddress(address ?? null);
-        return refreshState(address ?? null);
-      })
-      .catch(() => refreshState(null));
-  }, []);
-
-  useEffect(() => {
-    const provider = window?.ethereum;
-    if (!provider?.on) {
-      return undefined;
-    }
-
-    const handleAccountsChanged = async (accounts) => {
-      const nextAddress = accounts?.[0] ?? null;
-      setWalletAddress(nextAddress);
-      await refreshState(nextAddress);
-    };
-
-    provider.on("accountsChanged", handleAccountsChanged);
-    return () => provider.removeListener("accountsChanged", handleAccountsChanged);
-  }, []);
+    refreshState(walletAddress);
+  }, [walletAddress]);
 
   const persistWalletState = async (updater, successMessage) => {
     if (!walletAddress) {
@@ -110,18 +96,7 @@ export function useAppData() {
     setErrorMessage("");
 
     try {
-      const address = await connectWalletAddress();
-
-      if (address === null) {
-        // No browser wallet provider — show manual input modal
-        setShowWalletModal(true);
-        setIsWalletConnecting(false);
-        return;
-      }
-
-      setWalletAddress(address);
-      await refreshState(address);
-      setStatusMessage(`Wallet connected: ${formatWalletAddress(address)}`);
+      await tonConnectUI.openModal();
     } catch (error) {
       setErrorMessage(error.message || "Wallet connection failed.");
     } finally {
@@ -130,27 +105,11 @@ export function useAppData() {
   };
 
   const disconnectWalletHandler = async () => {
-    disconnectWallet();
-    setWalletAddress(null);
-    setStatusMessage("Wallet disconnected.");
-    await refreshState(null);
-  };
-
-  const connectManualWalletHandler = async (manualAddress) => {
-    setIsWalletConnecting(true);
-    setErrorMessage("");
-
     try {
-      const address = connectManualWallet(manualAddress);
-      setWalletAddress(address);
-      await refreshState(address);
-      setShowWalletModal(false);
-      setStatusMessage(`Wallet connected: ${formatWalletAddress(address)}`);
+      await tonConnectUI.disconnect();
+      setStatusMessage("Wallet disconnected.");
     } catch (error) {
-      setIsWalletConnecting(false);
-      throw error;
-    } finally {
-      setIsWalletConnecting(false);
+      setErrorMessage(error.message || "Failed to disconnect wallet.");
     }
   };
 
@@ -347,16 +306,13 @@ export function useAppData() {
     ...appViewModel,
     appName: seedData.appName,
     connectWallet,
-    connectManualWallet: connectManualWalletHandler,
     disconnectWallet: disconnectWalletHandler,
     completeModule,
     errorMessage,
     isLoading,
     isTelegramReady,
-    isWalletConnected: Boolean(walletAddress),
+    isWalletConnected,
     isWalletConnecting,
-    showWalletModal,
-    closeWalletModal: () => setShowWalletModal(false),
     statusMessage,
     walletAddress,
     walletLabel: formatWalletAddress(walletAddress),
