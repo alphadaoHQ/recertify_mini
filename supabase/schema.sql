@@ -148,3 +148,80 @@ create policy "Allow public insert on whitelist"
 create policy "Allow public update on whitelist"
   on whitelist for update
   to anon using (true) with check (true);
+
+-- =============================================
+-- ADMIN-MANAGED CONTENT TABLES
+-- =============================================
+
+create table if not exists courses (
+  id text primary key,
+  title text not null,
+  subtitle text,
+  icon text not null default 'sparkles',
+  image text,
+  mission_title text,
+  mission_label text default 'Project Mission',
+  mission_copy jsonb default '[]'::jsonb,
+  step integer default 1,
+  total_steps integer default 5,
+  reward_xp integer not null default 100,
+  nft_reward_id text,
+  nft_reward_title text,
+  nft_reward_rarity text,
+  nft_reward_image text,
+  question text,
+  answers jsonb default '[]'::jsonb,
+  sort_order integer default 0,
+  is_active boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+create table if not exists tasks (
+  id text primary key,
+  title text not null,
+  description text,
+  reward_xp integer not null default 50,
+  reward_label text,
+  status text default 'Instant',
+  icon text default 'send',
+  sort_order integer default 0,
+  is_active boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table courses enable row level security;
+alter table tasks enable row level security;
+
+-- courses
+create policy "Allow public read on courses"
+  on courses for select to anon using (true);
+create policy "Allow public insert on courses"
+  on courses for insert to anon with check (true);
+create policy "Allow public update on courses"
+  on courses for update to anon using (true) with check (true);
+create policy "Allow public delete on courses"
+  on courses for delete to anon using (true);
+
+-- tasks
+create policy "Allow public read on tasks"
+  on tasks for select to anon using (true);
+create policy "Allow public insert on tasks"
+  on tasks for insert to anon with check (true);
+create policy "Allow public update on tasks"
+  on tasks for update to anon using (true) with check (true);
+create policy "Allow public delete on tasks"
+  on tasks for delete to anon using (true);
+
+-- allow deletes on profiles (for admin user removal)
+create policy "Allow public delete on profiles"
+  on profiles for delete to anon using (true);
+create policy "Allow public delete on course_progress"
+  on course_progress for delete to anon using (true);
+create policy "Allow public delete on task_claims"
+  on task_claims for delete to anon using (true);
+create policy "Allow public delete on reward_claims"
+  on reward_claims for delete to anon using (true);
+create policy "Allow public delete on whitelist"
+  on whitelist for delete to anon using (true);

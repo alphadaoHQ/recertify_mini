@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTonAddress, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { createAppViewModel, loadLeaderboard, loadWalletState, loadWhitelistStatus, saveUsername, saveWalletState } from "../lib/appData";
+import { fetchActiveCourses, fetchActiveTasks } from "../lib/adminData";
 import { formatWalletAddress } from "../lib/wallet";
 import { getTelegramContext, initializeTelegramApp } from "../lib/telegram";
 import { seedData } from "../data/mockData";
@@ -37,12 +38,25 @@ export function useAppData() {
     leaderboard: seedData.defaultLeaderboard,
   });
   const [whitelistStatus, setWhitelistStatus] = useState(null);
+  const [dynamicModules, setDynamicModules] = useState(null);
+  const [dynamicTasks, setDynamicTasks] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     const telegramReady = initializeTelegramApp();
     setIsTelegramReady(telegramReady);
+
+    // Load admin-managed courses and tasks from Supabase (falls back to seedData)
+    (async () => {
+      try {
+        const [courses, tasks] = await Promise.all([fetchActiveCourses(), fetchActiveTasks()]);
+        if (courses) setDynamicModules(courses);
+        if (tasks) setDynamicTasks(tasks);
+      } catch {
+        // Supabase tables may not exist yet — seedData will be used
+      }
+    })();
   }, []);
 
   const refreshState = async (address) => {
@@ -114,7 +128,8 @@ export function useAppData() {
   };
 
   const completeModule = async (moduleId, selectedAnswerId) => {
-    const module = seedData.modules.find((entry) => entry.id === moduleId);
+    const modules = dynamicModules || seedData.modules;
+    const module = modules.find((entry) => entry.id === moduleId);
     if (!module) {
       setErrorMessage("This course module could not be found.");
       return { completed: false };
@@ -197,7 +212,8 @@ export function useAppData() {
   };
 
   const claimTask = async (taskId) => {
-    const task = seedData.tasks.find((entry) => entry.id === taskId);
+    const tasks = dynamicTasks || seedData.tasks;
+    const task = tasks.find((entry) => entry.id === taskId);
     if (!task) {
       setErrorMessage("This task could not be found.");
       return;
@@ -298,8 +314,8 @@ export function useAppData() {
   };
 
   const appViewModel = useMemo(
-    () => createAppViewModel(walletState, leaderboardState, whitelistStatus),
-    [walletState, leaderboardState, whitelistStatus],
+    () => createAppViewModel(walletState, leaderboardState, whitelistStatus, dynamicModules, dynamicTasks),
+    [walletState, leaderboardState, whitelistStatus, dynamicModules, dynamicTasks],
   );
 
   return {

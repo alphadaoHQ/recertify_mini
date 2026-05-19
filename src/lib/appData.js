@@ -397,7 +397,10 @@ export async function loadLeaderboard(walletState) {
   return buildLeaderboard(profiles, walletState.profile.walletAddress);
 }
 
-export function createAppViewModel(walletState, leaderboardState, whitelistStatus) {
+export function createAppViewModel(walletState, leaderboardState, whitelistStatus, dynamicModules, dynamicTasks) {
+  const modules = dynamicModules || seedData.modules;
+  const taskDefs = dynamicTasks || seedData.tasks;
+
   const user = {
     ...buildUserProfile(walletState.profile),
     rank: leaderboardState.currentUserRank,
@@ -405,14 +408,14 @@ export function createAppViewModel(walletState, leaderboardState, whitelistStatu
 
   return {
     user,
-    tasks: buildTasks(seedData.tasks, walletState.taskClaims),
-    modules: seedData.modules.map((module) => ({
+    tasks: buildTasks(taskDefs, walletState.taskClaims),
+    modules: modules.map((module) => ({
       ...module,
       progress: walletState.courseProgress[module.id] ?? null,
     })),
     recentMint: buildRecentMint(walletState.rewards),
-    progress: buildProgress(seedData.modules, walletState.courseProgress),
-    nfts: buildNfts(walletState.rewards, seedData.modules).concat(
+    progress: buildProgress(modules, walletState.courseProgress),
+    nfts: buildNfts(walletState.rewards, modules).concat(
       walletState.specialQuestClaimed
         ? [
             {

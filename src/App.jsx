@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-
 import { AppShell } from "./components/AppShell";
 import { useAppData } from "./hooks/useAppData";
 import { useTheme } from "./hooks/useTheme";
+import { AdminPage } from "./pages/admin/AdminPage";
 import { CourseModulePage } from "./pages/CourseModulePage";
 import { LearningHubPage } from "./pages/LearningHubPage";
 import { ProfilePage } from "./pages/ProfilePage";
@@ -36,6 +37,11 @@ export default function App() {
       [moduleId]: answerId,
     }));
   };
+
+  // Admin route renders outside the mobile shell
+  if (location.pathname === "/admin") {
+    return <AdminPage />;
+  }
 
   return (
     <AppShell
