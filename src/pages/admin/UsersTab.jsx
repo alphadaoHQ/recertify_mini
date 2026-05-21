@@ -13,7 +13,7 @@ export function UsersTab({ users, isLoading, onAdjustXp, onDelete }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-extrabold">Users</h1>
           <p className="mt-1 text-sm text-slate-400">{users.length} registered profiles.</p>
@@ -21,12 +21,12 @@ export function UsersTab({ users, isLoading, onAdjustXp, onDelete }) {
         <div className="relative">
           <Icon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" name="search" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search users…"
-            className="rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand-primary" />
+            className="w-full sm:w-auto rounded-xl border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 text-sm text-white outline-none placeholder:text-slate-500 focus:border-brand-primary" />
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-left text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[800px] text-left text-sm">
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               <th className="px-4 py-3 font-bold text-slate-400">User</th>

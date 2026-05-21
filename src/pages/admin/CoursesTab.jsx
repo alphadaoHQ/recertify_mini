@@ -30,11 +30,11 @@ function CourseModal({ course, onSave, onClose, isLoading }) {
           <button type="button" onClick={onClose} className="text-slate-400 hover:text-white"><Icon className="size-5" name="x" /></button>
         </div>
         <div className="grid gap-4 max-h-[65vh] overflow-y-auto pr-2">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input label="ID (slug)" value={form.id} onChange={(v) => set("id", v)} disabled={!!course} placeholder="e.g. ethereum-core" />
             <Input label="Title" value={form.title} onChange={(v) => set("title", v)} placeholder="e.g. Ethereum" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input label="Subtitle" value={form.subtitle} onChange={(v) => set("subtitle", v)} placeholder="e.g. L1 Fundamentals" />
             <Input label="Icon" value={form.icon} onChange={(v) => set("icon", v)} placeholder="e.g. diamond" />
           </div>
@@ -49,7 +49,7 @@ function CourseModal({ course, onSave, onClose, isLoading }) {
             ))}
             <button type="button" onClick={() => set("missionCopy", [...form.missionCopy, ""])} className="text-xs text-brand-primary-soft hover:underline">+ Add paragraph</button>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input label="Reward XP" type="number" value={form.rewardXp} onChange={(v) => set("rewardXp", Number(v))} />
             <Input label="Sort Order" type="number" value={form.sortOrder} onChange={(v) => set("sortOrder", Number(v))} />
           </div>
@@ -72,7 +72,7 @@ function CourseModal({ course, onSave, onClose, isLoading }) {
           </div>
           <div className="border-t border-white/10 pt-4">
             <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-400">NFT Reward</p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input label="NFT ID" value={form.nftReward.id} onChange={(v) => set("nftReward", { ...form.nftReward, id: v })} />
               <Input label="NFT Title" value={form.nftReward.title} onChange={(v) => set("nftReward", { ...form.nftReward, title: v })} />
               <Input label="Rarity" value={form.nftReward.rarity} onChange={(v) => set("nftReward", { ...form.nftReward, rarity: v })} />
@@ -115,7 +115,7 @@ export function CoursesTab({ courses, isLoading, onAdd, onEdit, onDelete, onSeed
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-extrabold">Courses</h1>
           <p className="mt-1 text-sm text-slate-400">Manage learning modules shown to users.</p>
@@ -130,8 +130,8 @@ export function CoursesTab({ courses, isLoading, onAdd, onEdit, onDelete, onSeed
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-left text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[600px] text-left text-sm">
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               <th className="px-4 py-3 font-bold text-slate-400">Title</th>

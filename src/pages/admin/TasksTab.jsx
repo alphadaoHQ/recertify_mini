@@ -22,7 +22,7 @@ function TaskModal({ task, onSave, onClose, isLoading }) {
             <textarea rows={3} value={form.description} onChange={(e) => set("description", e.target.value)}
               className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-brand-primary" />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Inp label="Reward XP" type="number" value={form.rewardXp} onChange={(v) => set("rewardXp", Number(v))} />
             <Inp label="Status" value={form.status} onChange={(v) => set("status", v)} placeholder="Instant" />
             <Inp label="Icon" value={form.icon} onChange={(v) => set("icon", v)} placeholder="send" />
@@ -64,7 +64,7 @@ export function TasksTab({ tasks, isLoading, onAdd, onEdit, onDelete, onSeed }) 
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-extrabold">Tasks</h1>
           <p className="mt-1 text-sm text-slate-400">Manage daily tasks and quests.</p>
@@ -79,8 +79,8 @@ export function TasksTab({ tasks, isLoading, onAdd, onEdit, onDelete, onSeed }) 
         </div>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-left text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[700px] text-left text-sm">
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               <th className="px-4 py-3 font-bold text-slate-400">Title</th>

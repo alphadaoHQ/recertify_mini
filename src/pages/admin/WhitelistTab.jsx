@@ -3,7 +3,7 @@ import { Icon } from "../../components/Icon";
 export function WhitelistTab({ whitelistUsers, isLoading, onExport }) {
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-display text-2xl font-extrabold">Whitelist</h1>
           <p className="mt-1 text-sm text-slate-400">{whitelistUsers.length} eligible users.</p>
@@ -14,8 +14,8 @@ export function WhitelistTab({ whitelistUsers, isLoading, onExport }) {
         </button>
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-left text-sm">
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[750px] text-left text-sm">
           <thead className="border-b border-white/10 bg-white/5">
             <tr>
               <th className="px-4 py-3 font-bold text-slate-400">Wallet</th>
